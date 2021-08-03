@@ -14,9 +14,10 @@ attach(reviews) ; names(reviews)
 ## Grouping the data to show reviewed products in descending order with dplyr
 
 reviewed_products <- reviews %>% 
-            group_by(asin) %>% 
-            summarize(occurences = n()) %>% 
-            arrange(desc(occurences)) 
+                      group_by(asin) %>% 
+                      summarize(occurences = n()) %>% 
+                      arrange(desc(occurences)) 
+
 
 ## Filtering top 10 products
 
@@ -38,12 +39,12 @@ top_reviews_df <- data.frame(labels, new_labels, count)
 ## Barplot of top 10 reviewed products
 
 top_reviews <- ggplot(top_reviews_df, aes(x = reorder(new_labels, -count), y = count)) + 
-    geom_bar(stat = "identity", fill = "#1663BE") +
-    geom_text(aes(label = count), vjust = -1, size = 4.2) +
-    theme_economist() +
-    labs(title = "Top 10 Reviewed Products", x = "", y = "# Reviews") +
-    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) +
-    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 1))
+                    geom_bar(stat = "identity", fill = "#1663BE") +
+                    geom_text(aes(label = count), vjust = -1, size = 4.2) +
+                    theme_economist() +
+                    labs(title = "Top 10 Reviewed Products", x = "", y = "# Reviews") +
+                    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) +
+                    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 1))
 
 top_reviews
 
@@ -63,13 +64,13 @@ top_ratings_df <- data.frame(top_ratings)
 ## Plotting the average rating of the top 10 reviewed products
 
 top_ratings <- ggplot(top_ratings_df, aes(x = reorder(new_labels, -occurences), y = avg_rating)) + 
-    geom_bar(stat = "identity", fill = "#1663BE") +
-    geom_text(aes(label = round(avg_rating, 2)), vjust = -1, size = 4.2) +
-    theme_economist() +
-    geom_hline(yintercept = 3, color = "red") +
-    labs(title = "Top 10 Products Average Rating", x = "", y = "Rating") +
-    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) +
-    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 1))
+                    geom_bar(stat = "identity", fill = "#1663BE") +
+                    geom_text(aes(label = round(avg_rating, 2)), vjust = -1, size = 4.2) +
+                    theme_economist() +
+                    geom_hline(yintercept = 3, color = "red") +
+                    labs(title = "Top 10 Products Average Rating", x = "", y = "Rating") +
+                    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) +
+                    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 1))
 
 top_ratings
 
@@ -89,16 +90,16 @@ head(new_reviews, 10)
 
 
 new_reviews2 <- reviews %>% 
-                select(asin, overall) %>% 
-                group_by(asin) %>% 
-                summarize(occurences = n(), avg_rating = mean(overall)) %>% 
-                mutate (
-                    sentiment = case_when(
-                    avg_rating <= 2 ~ 'Very Negative',
-                    avg_rating > 2 & avg_rating < 4 ~ 'Negative',
-                    avg_rating >= 4 ~ 'Positive'
-                    )
-                ) 
+                 select(asin, overall) %>% 
+                 group_by(asin) %>% 
+                 summarize(occurences = n(), avg_rating = mean(overall)) %>% 
+                 mutate (
+                      sentiment = case_when(
+                      avg_rating <= 2 ~ 'Very Negative',
+                      avg_rating > 2 & avg_rating < 4 ~ 'Negative',
+                      avg_rating >= 4 ~ 'Positive'
+                      )
+                  ) 
 
 
 
