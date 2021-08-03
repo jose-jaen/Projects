@@ -4,7 +4,8 @@ setwd('/home/jose/Desktop/Mis cosas/Machine Learning Project')
 
 ## Firing up the relevant packages for data exploration and visualization
 
-library(tidyverse) ; library(reshape2) ; library(ggthemes)
+library(tidyverse) ; library(reshape2) ; library(ggthemes) ; library(ggridges)
+library(fBasics) ; library(ggExtra)
 
 ## Reading the data from the CSV file created in Python
 
@@ -42,7 +43,7 @@ top_reviews <- ggplot(top_reviews_df, aes(x = reorder(new_labels, -count), y = c
                     geom_bar(stat = "identity", fill = "#1663BE") +
                     geom_text(aes(label = count), vjust = -1, size = 4.2) +
                     theme_economist() +
-                    labs(title = "Top 10 Reviewed Products", x = "", y = "# Reviews") +
+                    labs(title = "TOP 10 REVIEWED PRODUCTS", x = "", y = "# REVIEWS") +
                     theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) +
                     scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 1))
 
@@ -66,79 +67,136 @@ top_ratings_df <- data.frame(top_ratings)
 top_ratings <- ggplot(top_ratings_df, aes(x = reorder(new_labels, -occurences), y = avg_rating)) + 
                     geom_bar(stat = "identity", fill = "#1663BE") +
                     geom_text(aes(label = round(avg_rating, 2)), vjust = -1, size = 4.2) +
-                    theme_economist() +
-                    geom_hline(yintercept = 3, color = "red") +
-                    labs(title = "Top 10 Products Average Rating", x = "", y = "Rating") +
+                    theme_economist() + ylim(c(0, 6)) +
+                    geom_hline(yintercept = 4, color = "red", size = 1) +
+                    labs(title = "TOP 10 PRODUCTS AVERAGE RATING", x = "", y = "RATING") +
                     theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) +
                     scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 1))
 
 top_ratings
 
 
-new_reviews <- reviews %>% 
-                select(asin, overall) %>% 
-                group_by(asin) %>% 
-                summarize(occurences = n(), avg_rating = mean(overall)) %>% 
-                mutate (
+## Let us introduce the threshold rule 
+
+reviews_query <- reviews %>% 
+                  mutate (
                     sentiment = case_when(
-                    avg_rating < 4 ~ '-1',
-                    avg_rating >= 4 ~ '1'
-                    )
-                )
+                    overall <= 2 ~ 'Negative',
+                    overall > 2 & overall < 4 ~ 'Neutral',
+                    overall >= 4 ~ 'Positive'
+                  )
+                 ) %>% 
+                  select(asin, overall, sentiment) %>% 
+                  group_by(asin) %>% 
+                  summarize(occurences = n(), overall, avg_rating = mean(overall), sentiment, asin)
 
-head(new_reviews, 10)
+reviews_query <- as.data.frame(reviews_query)
 
 
-new_reviews2 <- reviews %>% 
+## Total number of positive reviews
+
+length(reviews_query$asin[reviews_query$sentiment == 'Positive'])
+
+## Total number of neutral reviews
+
+length(reviews_query$asin[reviews_query$sentiment == 'Neutral'])
+
+## Total number of negative reviews
+
+length(reviews_query$asin[reviews_query$sentiment == 'Negative'])
+
+
+## Let us now focus upon average rating
+
+segmented_reviews <- reviews %>% 
                  select(asin, overall) %>% 
                  group_by(asin) %>% 
                  summarize(occurences = n(), avg_rating = mean(overall)) %>% 
                  mutate (
                       sentiment = case_when(
-                      avg_rating <= 2 ~ 'Very Negative',
-                      avg_rating > 2 & avg_rating < 4 ~ 'Negative',
+                      avg_rating <= 2 ~ 'Negative',
+                      avg_rating > 2 & avg_rating < 4 ~ 'Neutral',
                       avg_rating >= 4 ~ 'Positive'
                       )
                   ) 
 
+## Distribution of products by average rating 
+
+general_distribution <- ggplot(data = segmented_reviews, aes(x = avg_rating)) +
+  geom_histogram(aes(y = ..density..), position = "identity", alpha = 0.5, color = '#BA55D3', fill = '#BA55D3') + geom_density(alpha = 0.6, color = 'red') +
+  scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
+  scale_fill_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
+  labs(title = "RATING DISTRIBUTION", x = "AVERAGE RATING", y = "DENSITY") + theme_economist() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) 
+
+general_distribution
+
+## Positive reviews is the dominant group, but let's see if there is some correlation between ratings and number of comments
+
+## Scatterplot
+
+scatter_plot <- ggplot(data = segmented_reviews, aes(x = avg_rating, y = occurences, fill = sentiment, color = sentiment)) + 
+    geom_point() + theme_economist() +
+    scale_fill_manual(values = c('#E3242B', "#E69F00", "#56B4E9")) +
+    scale_color_manual(values = c('#E3242B', "#E69F00", "#56B4E9")) +
+    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) +
+    labs(title = "OCCURENCES BY SENTIMENT", x = "AVERAGE RATING", y = "OCCURENCES") +
+    coord_cartesian(ylim = c(0, 5000))
+
+scatter_plot
 
 
 
+cor(segmented_reviews$avg_rating, segmented_reviews$occurences)
 
-ggplot(data = new_reviews, aes(x = avg_rating, color = sentiment, fill = sentiment)) +
-geom_histogram(aes(y = ..density..), position = "identity", alpha = 0.5) + geom_density(alpha = 0.6) +
-scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
-scale_fill_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
-labs(title = "Rating distribution", x = "Average Rating", y = "Density") + theme_economist() +
-geom_vline(data = new_reviews, aes(xintercept = occurences, color = sentiment), linetype = "dashed") 
+## A quick glance at the graph and the low correlation value are indicative of a low relationship between both variables
 
+## Let's test if the correlation is statistically significant
 
-ggplot(data = new_reviews2, aes(x = avg_rating, color = sentiment, fill = sentiment)) +
-geom_histogram(aes(y = ..density..), position = "identity", alpha = 0.5) + geom_density(alpha = 0.6) +
-scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
-scale_fill_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
-labs(title = "Rating distribution", x = "Average Rating", y = "Density") + theme_economist() 
+correlationTest(segmented_reviews$avg_rating, segmented_reviews$occurences, "pearson")
 
+## We reject the null hypothesis that there is none, however, there does not seem to be a linear relationship
 
+## Let us use rank correlation coefficients:
 
-ggplot(data = new_reviews, aes(x = avg_rating, y = occurences, fill = sentiment, color = sentiment)) + geom_point()
+correlationTest(segmented_reviews$avg_rating, segmented_reviews$occurences, "spearman")
+correlationTest(segmented_reviews$avg_rating, segmented_reviews$occurences, "kendall")
 
+# Variables' distributions are independent
 
+## This may be caused by outliers, which can be clearly reflected in a boxplot
 
 
+boxplot <- ggplot(data = segmented_reviews, aes(x = avg_rating, y = occurences, fill= sentiment)) + 
+    geom_boxplot(alpha = 0.8) +
+    scale_fill_manual(values = c('#E3242B', "#E69F00", "#56B4E9")) +
+    scale_color_manual(values = c('#E3242B', "#E69F00", "#56B4E9")) +
+    theme(legend.position = "none") + theme_economist() +
+    labs(title = "OCCURENCES DISTRIBUTION", x = "AVERAGE RATING", y = "OCCURENCES") +
+    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2)) +
+    coord_cartesian(ylim = c(0, 50)) + xlim(c(0, 6.5))
+
+boxplot
 
 
+## Statistical inference to study if groups have different means
 
+negative <- segmented_reviews$occurences[segmented_reviews$sentiment == 'Negative']
+neutral <- segmented_reviews$occurences[segmented_reviews$sentiment == 'Neutral']
+positive <- segmented_reviews$occurences[segmented_reviews$sentiment == 'Positive']
 
+length(negative) ; length(neutral) ; length(positive)
 
+occurence <- segmented_reviews$occurences
 
+Block <- c(rep(1, length(negative)), rep(2, length(neutral)), rep(3, length(positive)))
 
-ggplot(data = new_reviews2, aes(x = avg_rating)) +
-geom_histogram(aes(..scaled..), position = "identity", alpha = 0.5) + geom_density(alpha = 0.6) +
-##scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
-##scale_fill_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
-labs(title = "Rating distribution", x = "Average Rating", y = "Density") + theme_economist()
+Block <- factor(Block)
 
-ggplot(new_reviews2, aes(avg_rating, ..scaled.., fill = sentiment)) +
-    geom_density() +
-    ggtitle("Scaled")
+anova.fit <- aov(occurence ~ Block)
+
+summary(anova.fit)
+
+TukeyHSD(anova.fit)
+
+plot(TukeyHSD(anova.fit))
