@@ -1,11 +1,11 @@
-## Setting up the working directory where the data is stored
+### Setting up the working directory where the data is stored
 
 setwd('/home/jose/Desktop/Mis cosas/Machine Learning Project')
 
 ## Firing up the relevant packages for data exploration and visualization
 
 library(tidyverse) ; library(reshape2) ; library(ggthemes) ; library(ggridges)
-library(fBasics) ; library(ggExtra) ; library(e1071) ; library(BSDA)
+library(fBasics) ; library(ggExtra) ; library(e1071) ; library(BSDA) ; library(nortest)
 
 ## Reading the data from the CSV file created in Python
 
@@ -137,6 +137,10 @@ mean(segmented_reviews$avg_rating)
 median(segmented_reviews$avg_rating)
 skewness(segmented_reviews$avg_rating)
 
+## Some relevant statistical inference techniques would be of no use owing to the lack of normality, which can be easily tested
+
+lillie.test(segmented_reviews$avg_rating)
+
 ## Positive reviews is the dominant group, but let's see if there is some correlation between ratings and number of comments
 
 ## Scatterplot
@@ -213,7 +217,8 @@ tky$pair = rownames(tky)
 
 # Plot pairwise TukeyHSD comparisons and color by significance level
 
-ggplot(tky, aes(color = cut(`p adj`, c(0, 0.01, 0.05, 1), label= c("p < 0.01", "p < 0.05", "Non-Significant")))) +
+ggplot(tky, aes(color = cut(`p adj`, c(0, 0.01, 0.05, 1), 
+                           label= c("p < 0.01", "p < 0.05", "Non-Significant")))) +
   geom_hline(yintercept = 0, lty = "11", color = "grey30") +
   geom_errorbar(aes(pair, ymin = lwr, ymax = upr), width = 0.2) +
   geom_point(aes(pair, diff)) +
@@ -223,8 +228,5 @@ ggplot(tky, aes(color = cut(`p adj`, c(0, 0.01, 0.05, 1), label= c("p < 0.01", "
 
 ## Although difference among means for positive and neutral is not statistically significant, let's see if medians are (Q2)
 
-SIGN.test(segmented_reviews$avg_rating[segmented_reviews$sentiment == 'Positive'],
-md = median(segmented_reviews$avg_rating[segmented_reviews$sentiment == 'Neutral'], alternative = 'greater'))
-
-median(segmented_reviews$avg_rating[segmented_reviews$sentiment == 'Positive'])
-median(segmented_reviews$avg_ratin
+SIGN.test(segmented_reviews$avg_rating[segmented_reviews$sentiment == 'Positive'], 
+          md = median(segmented_reviews$avg_rating[segmented_reviews$sentiment == 'Neutral'], alternative = 'greater'))
