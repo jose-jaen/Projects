@@ -1,4 +1,4 @@
-### Setting up the working directory where the data is stored
+## Setting up the working directory where the data is stored
 
 setwd('/home/jose/Desktop/Mis cosas/Machine Learning Project')
 
@@ -140,6 +140,7 @@ skewness(segmented_reviews$avg_rating)
 ## Some relevant statistical inference techniques would be of no use owing to the lack of normality, which can be easily tested
 
 lillie.test(segmented_reviews$avg_rating)
+lillie.test(segmented_reviews$occurences)
 
 ## Positive reviews is the dominant group, but let's see if there is some correlation between ratings and number of comments
 
@@ -209,9 +210,6 @@ summary(anova.fit)
 
 tukey <- TukeyHSD(anova.fit)
 
-plot(TukeyHSD(anova.fit))
-
-
 tky = as.data.frame(TukeyHSD(anova.fit)$Block)
 tky$pair = rownames(tky)
 
@@ -220,13 +218,15 @@ tky$pair = rownames(tky)
 ggplot(tky, aes(color = cut(`p adj`, c(0, 0.01, 0.05, 1), 
                            label= c("p < 0.01", "p < 0.05", "Non-Significant")))) +
   geom_hline(yintercept = 0, lty = "11", color = "grey30") +
-  geom_errorbar(aes(pair, ymin = lwr, ymax = upr), width = 0.2) +
-  geom_point(aes(pair, diff)) +
+  geom_errorbar(aes(pair, ymin = lwr, ymax = upr), width = 0.2, size = 1.3) +
+  geom_point(aes(pair, diff), size = 3) +
   labs(color = "") + theme_economist() +
   labs(title = "TUKEY-HSD TEST", x = "PAIRS", y = expression(H[0])) +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5, vjust = -2))
 
 ## Although difference among means for positive and neutral is not statistically significant, let's see if medians are (Q2)
 
-SIGN.test(segmented_reviews$avg_rating[segmented_reviews$sentiment == 'Positive'], 
-          md = median(segmented_reviews$avg_rating[segmented_reviews$sentiment == 'Neutral'], alternative = 'greater'))
+positive_data <- segmented_reviews$occurences[segmented_reviews$sentiment == 'Positive']
+
+SIGN.test(positive_data, md = median(segmented_reviews$occurences[segmented_reviews$sentiment == 'Neutral']), 
+          alternative = "greater")
