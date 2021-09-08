@@ -4,13 +4,14 @@ setwd('/home/jose/Desktop/Mis cosas/Machine Learning Project')
 
 ## Firing up the relevant packages for data exploration and visualization
 
-library(tidyverse) ; library(reshape2) ; library(ggthemes) ; library(ggridges)
-library(fBasics) ; library(ggExtra) ; library(e1071) ; library(BSDA) ; library(nortest)
+library(tidyverse) ; library(reshape2) ; library(ggthemes) ; library(ggridges); 
+library(fBasics) ; library(ggExtra) ; library(e1071) ; library(BSDA) ; library(nortest) 
 
 ## Reading the data from the CSV file created in Python
 
 reviews <- read.csv('amazon_reviews.csv', header = T, sep = ",", dec = ".")
 attach(reviews) ; names(reviews)
+
 
 ## Grouping the data to show reviewed products in descending order with dplyr
 
@@ -172,9 +173,9 @@ correlationTest(segmented_reviews$avg_rating, segmented_reviews$occurrences, "pe
 correlationTest(segmented_reviews$avg_rating, segmented_reviews$occurrences, "spearman")
 correlationTest(segmented_reviews$avg_rating, segmented_reviews$occurrences, "kendall")
 
-# Variables' distributions are independent
+# Variables' distributions are not independent
 
-## This may be caused by outliers, which can be clearly reflected in a boxplot
+## Due to a strong presence of outliers, let us visualize a boxplot
 
 
 boxplot <- ggplot(data = segmented_reviews, aes(x = avg_rating, y = occurrences, fill= sentiment)) + 
@@ -195,3 +196,21 @@ positive_data <- segmented_reviews$occurrences[segmented_reviews$sentiment == 'P
 
 SIGN.test(positive_data, md = median(segmented_reviews$occurrences[segmented_reviews$sentiment == 'Neutral']), 
           alternative = "greater")
+
+## Identifying top positive and negative reviews for K-NN Algorithm in Python given the retrieved labels
+
+## Searching for comments that fulfill conditions
+
+reviews$reviewText[(reviews$asin == 'B007BYLLNI') & (reviews$overall == 5)]
+
+## Selecting the objective among potential candidates
+
+reviews$reviewText[(reviews$asin == 'B007BYLLNI') & (reviews$overall == 5)][1]
+
+## Most negative review
+
+reviews$reviewText[(reviews$asin == 'B005FPT38A') & (reviews$overall == 1)]
+
+## Choosing the target
+
+reviews$reviewText[(reviews$asin == 'B005FPT38A') & (reviews$overall == 1)][1]
