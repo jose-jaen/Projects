@@ -9,4 +9,4 @@ I am José Jaén, a Dual Bachelor Degree in Economics & Law student at Universid
 
 This is a collection of my Data Science/Data Analytics projects
 
-(Currently working on a Deep Learning project and sorting answers to Fumio Hayashi's graduate-level book *Econometrics*)
+(Currently working on a Deep Learning project and answers from a selection of chapters of Fumio Hayashi's graduate-level book *Econometrics*)
