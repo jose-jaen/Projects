@@ -1,5 +1,5 @@
 datos = readtable('coches.csv');
-cuantis = table2array(datos(:, [3 4 5 6 7 8 9 10 11]));
+cuantis = table2array(datos(:, [3:11]));
 
 % Gráfico de dispersión matricial
 
@@ -17,7 +17,7 @@ eta_square = 1 - det(R)
 % Los nuevos datos son las variables transformadas en Python
 
 datos = readtable('coches_new.csv');
-cuantis = table2array(datos(:, [3 4 5 6 7 8 9 10 11]));
+cuantis = table2array(datos(:, [3:11]));
 
 % Gráfico de dispersión matricial en las nuevas variables
 
@@ -46,9 +46,9 @@ diesel = [cuantis(diesel_posicion',:)];
 % Preparamos contraste de hipótesis T^2 de Hotelling
 
 [m_gas, S_gas, R_gas] = stats(gasolina); [m_diesel, S_diesel, R_diesel] = stats(diesel);
-Sp = ((1/(n_gasolina+n_diesel))*(n_gasolina*S_gas+n_diesel*S_diesel));
+Sp = ((1/(n_gasolina + n_diesel))*(n_gasolina*S_gas + n_diesel*S_diesel));
 diferencia = m_gas'-m_diesel';
-f = (n_gasolina+n_diesel-p-1)/(p*(n_gasolina+n_diesel-2))*(n_gasolina*n_diesel)/(n_gasolina+n_diesel)*diferencia'*inv(Sp)*diferencia;
+f = (n_gasolina+n_diesel-p-1)/(p*(n_gasolina + n_diesel-2))*(n_gasolina*n_diesel)/(n_gasolina + n_diesel)*diferencia'*inv(Sp)*diferencia;
 df1 = p; df2 = n_gasolina + n_diesel - p - 1;
 cv = finv(0.95, df1, df2);
 
