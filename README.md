@@ -7,6 +7,4 @@ I am José Jaén, a Dual Bachelor Degree in Economics & Law student at Universid
 - 🤔 Passionate about Machine Learning, Statistics, Econometrics and AI.
 - 💬 Please feel free to check my LinkedIn profile: https://www.linkedin.com/in/jose-jaen/
 
-This is a collection of my Data Science/Data Analytics projects
-
-(Currently working on a Deep Learning project and answers from a selection of chapters of Fumio Hayashi's graduate-level book *Econometrics*)
+This is a collection of my Data Science related projects
