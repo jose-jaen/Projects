@@ -1,3 +1,7 @@
-In this section solutions to Fumio Hayashi's Econometrics are provided for a selection of Chapters
+In this section solutions to Fumio Hayashi's Econometrics are provided for the following chapters:
 
-Last updated: 04/05/2022
+- Finite Sample Theory
+
+- Large Sample Theory
+
+Last updated: 13/04/2022
