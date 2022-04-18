@@ -1,8 +1,8 @@
-In this section solutions to graduate-level Fumio Hayashi's *Econometrics* are provided for the following chapters:
+In this section a selectiong of solutions to graduate-level Fumio Hayashi's *Econometrics* are provided for the following chapters:
 
 - Finite Sample Theory
 
 - Large Sample Theory
 
 
-Last updated: 13/04/2022
+Last updated: 18/04/2022
