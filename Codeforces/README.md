@@ -1,5 +1,5 @@
-For the purpose of polishing coding skills, I sometimes solve and upload programming problems from Codeforces
+For the purpose of polishing coding and algorithms skills, I sometimes solve and upload programming problems from Codeforces
 
-Problems solved so far: 35
+Problems solved so far: 44
 
-Last time updated: 06/06/2022
+Last time updated: 10/06/2022
